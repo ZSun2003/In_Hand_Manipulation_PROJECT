@@ -1,0 +1,63 @@
+<mujoco>
+    <!-- Generated from fruit_capsules_5mm.json; maximum medial spacing is 5 mm. -->
+    <geom name="object_pear_collision_000"
+          class="grasp_object" type="capsule" size="0.003543127"
+          fromto="0.004000000 0.053539131 0.011807034 0.003999739 0.048888063 0.013310934" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_001"
+          class="grasp_object" type="capsule" size="0.005406555"
+          fromto="0.003999739 0.048888063 0.013310934 0.003970375 0.044172701 0.014603332" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_002"
+          class="grasp_object" type="capsule" size="0.009814079"
+          fromto="0.003970375 0.044172701 0.014603332 0.003631107 0.039517237 0.016047227" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_003"
+          class="grasp_object" type="capsule" size="0.016402775"
+          fromto="0.003631107 0.039517237 0.016047227 0.003082394 0.034938087 0.017670066" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_004"
+          class="grasp_object" type="capsule" size="0.017351895"
+          fromto="0.003082394 0.034938087 0.017670066 0.002609976 0.030331747 0.019238707" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_005"
+          class="grasp_object" type="capsule" size="0.018184066"
+          fromto="0.002609976 0.030331747 0.019238707 0.002029887 0.025773331 0.020907937" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_006"
+          class="grasp_object" type="capsule" size="0.019215519"
+          fromto="0.002029887 0.025773331 0.020907937 0.001470997 0.021258025 0.022698117" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_007"
+          class="grasp_object" type="capsule" size="0.020411465"
+          fromto="0.001470997 0.021258025 0.022698117 0.001056403 0.016746769 0.024532373" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_008"
+          class="grasp_object" type="capsule" size="0.021971634"
+          fromto="0.001056403 0.016746769 0.024532373 0.000941523 0.012193356 0.026306985" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_009"
+          class="grasp_object" type="capsule" size="0.023859759"
+          fromto="0.000941523 0.012193356 0.026306985 0.000505503 0.007541384 0.027739986" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_010"
+          class="grasp_object" type="capsule" size="0.026145761"
+          fromto="0.000505503 0.007541384 0.027739986 0.000064935 0.002971106 0.029413292" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_011"
+          class="grasp_object" type="capsule" size="0.028010435"
+          fromto="0.000064935 0.002971106 0.029413292 0.000001319 -0.001593829 0.031162895" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_012"
+          class="grasp_object" type="capsule" size="0.032978342"
+          fromto="0.000001319 -0.001593829 0.031162895 0.000000000 -0.006194974 0.032816926" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_013"
+          class="grasp_object" type="capsule" size="0.030306443"
+          fromto="0.000000000 -0.006194974 0.032816926 0.000000664 -0.010894158 0.034159967" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_014"
+          class="grasp_object" type="capsule" size="0.026740038"
+          fromto="0.000000664 -0.010894158 0.034159967 0.000054171 -0.015646500 0.035307189" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_015"
+          class="grasp_object" type="capsule" size="0.022558549"
+          fromto="0.000054171 -0.015646500 0.035307189 0.000470464 -0.020277901 0.036796778" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_016"
+          class="grasp_object" type="capsule" size="0.017643228"
+          fromto="0.000470464 -0.020277901 0.036796778 0.000912620 -0.024606988 0.039015980" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_017"
+          class="grasp_object" type="capsule" size="0.013021344"
+          fromto="0.000912620 -0.024606988 0.039015980 0.000997756 -0.028987385 0.041177490" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_018"
+          class="grasp_object" type="capsule" size="0.008238765"
+          fromto="0.000997756 -0.028987385 0.041177490 0.001000000 -0.033663442 0.042584687" rgba="0 0 0 0"/>
+    <geom name="object_pear_collision_019"
+          class="grasp_object" type="capsule" size="0.003487046"
+          fromto="0.001000000 -0.033663442 0.042584687 0.001000000 -0.038456841 0.043542172" rgba="0 0 0 0"/>
+</mujoco>

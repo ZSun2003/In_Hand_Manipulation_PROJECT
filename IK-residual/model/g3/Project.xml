@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco>
+    <compiler angle="radian" meshdir="mesh" balanceinertia="true" discardvisual="false" autolimits="true"/>
+    <option timestep="0.0005" solver="Newton" iterations="150" ls_iterations="20" tolerance="1e-10" noslip_iterations="10">
+
+
+        <flag warmstart="enable"/>
+    </option>
+
+    <include file="Share.xml"/>
+    <asset>
+        <!-- Convex, regular 60 mm equilateral-triangle x 80 mm prism. -->
+        <mesh name="triangular_prism_mesh"
+              vertex="0.034641016 0 -0.04 -0.017320508 0.03 -0.04 -0.017320508 -0.03 -0.04 0.034641016 0 0.04 -0.017320508 0.03 0.04 -0.017320508 -0.03 0.04"/>
+        <!-- Convex 32-sided approximation of a regular D60 x H100 mm cone. -->
+        <mesh name="cone_60x100_mesh"
+              vertex="0.030000000 0.000000000 -0.050000000 0.029423558 0.005852710 -0.050000000 0.027716386 0.011480503 -0.050000000 0.024944088 0.016667107 -0.050000000 0.021213203 0.021213203 -0.050000000 0.016667107 0.024944088 -0.050000000 0.011480503 0.027716386 -0.050000000 0.005852710 0.029423558 -0.050000000 0.000000000 0.030000000 -0.050000000 -0.005852710 0.029423558 -0.050000000 -0.011480503 0.027716386 -0.050000000 -0.016667107 0.024944088 -0.050000000 -0.021213203 0.021213203 -0.050000000 -0.024944088 0.016667107 -0.050000000 -0.027716386 0.011480503 -0.050000000 -0.029423558 0.005852710 -0.050000000 -0.030000000 0.000000000 -0.050000000 -0.029423558 -0.005852710 -0.050000000 -0.027716386 -0.011480503 -0.050000000 -0.024944088 -0.016667107 -0.050000000 -0.021213203 -0.021213203 -0.050000000 -0.016667107 -0.024944088 -0.050000000 -0.011480503 -0.027716386 -0.050000000 -0.005852710 -0.029423558 -0.050000000 0.000000000 -0.030000000 -0.050000000 0.005852710 -0.029423558 -0.050000000 0.011480503 -0.027716386 -0.050000000 0.016667107 -0.024944088 -0.050000000 0.021213203 -0.021213203 -0.050000000 0.024944088 -0.016667107 -0.050000000 0.027716386 -0.011480503 -0.050000000 0.029423558 -0.005852710 -0.050000000 0 0 0.050000000"/>
+    </asset>
+    <worldbody>
+        <geom name="floor" pos="0 0 -0.1" size="15 15 1" type="plane" material="matplane" margin="0.001" condim="3" friction="1 0.005 0.0001" contype="0" conaffinity="0"/>
+        <body name="floor" pos="0 0 -0.1"/>
+
+        <include file="Gripper.xml"/>
+
+        <body name="table" pos="0 0 0.25">
+            <geom name="table_geom" type="box" class="platform" size="0.5 0.5 0.01" rgba="0.70 0.70 0.70 1" friction="1 0.005 0.0001"/>
+        </body>
+
+        <!-- Every free-body origin is its requested grasp-plane frame. -->
+        <body name="cube_5cm" pos="0 0 0.285">
+            <joint name="joint:cube_5cm" type="free" damping="0.01"/>
+            <geom name="cube_geom" type="box" size="0.025 0.025 0.025" mass="0.2" rgba="0.20 0.80 0.20 1" contype="4" conaffinity="10" condim="3" friction="1.2 0.01 0.0002" solref="0.001 1" solimp="0.95 0.99 0.001" priority="1" margin="0.0003"/>
+            <site name="grasp_frame_cube" pos="0 0 0" size="0.003" rgba="1 1 0 1"/>
+        </body>
+
+        <body name="cylinder_50x80" pos="1 0 0.30">
+            <joint name="joint:cylinder_50x80" type="free" damping="0.01"/>
+            <geom name="cylinder_geom" type="cylinder" size="0.025 0.04" mass="0.2" rgba="0.20 0.45 0.90 1" contype="4" conaffinity="10" condim="3" friction="1.2 0.01 0.0002" solref="0.001 1" solimp="0.95 0.99 0.001" priority="1" margin="0.0003"/>
+            <site name="grasp_frame_cylinder" pos="0 0 0" size="0.003" rgba="1 1 0 1"/>
+        </body>
+
+        <body name="triangular_prism_60x80" pos="2 0 0.30">
+            <joint name="joint:triangular_prism_60x80" type="free" damping="0.01"/>
+            <geom name="triangular_prism_geom" type="mesh" mesh="triangular_prism_mesh" euler="0 0 -0.261799387" mass="0.2" rgba="0.90 0.55 0.15 1" contype="4" conaffinity="10" condim="3" friction="1.2 0.01 0.0002" solref="0.001 1" solimp="0.95 0.99 0.001" priority="1" margin="0.0003"/>
+            <site name="grasp_frame_triangular_prism" pos="0 0 0" size="0.003" rgba="1 1 0 1"/>
+        </body>
+
+        <!-- Body origin is H/3 above the base; the mesh centre is 1/6 H above it. -->
+        <body name="cone_60x100" pos="3 0 0.293333333">
+            <joint name="joint:cone_60x100" type="free" damping="0.01"/>
+            <geom name="cone_geom" type="mesh" mesh="cone_60x100_mesh" pos="0 0 0.016666667" mass="0.2" rgba="0.75 0.25 0.80 1" contype="4" conaffinity="10" condim="3" friction="1.2 0.01 0.0002" solref="0.001 1" solimp="0.95 0.99 0.001" priority="1" margin="0.0003"/>
+            <site name="grasp_frame_cone" pos="0 0 0" size="0.003" rgba="1 1 0 1"/>
+        </body>
+
+        <light directional="true" diffuse="0.3 0.3 0.3" specular="0.3 0.3 0.3" castshadow="true" pos="0.1 0.1 0.1" dir="0.2 0.1 -0.1"/>
+    </worldbody>
+</mujoco>

@@ -1,0 +1,161 @@
+<mujoco>
+    <!--
+        Neutral assembly for the July-2026 meshes.
+
+        Mesh-local frames are used directly: no geom translation or rotation is
+        applied.  The only body translations below are joint-centre/link-length
+        offsets required by the kinematic tree.  All joint reference angles are
+        zero.  Local x points radially outwards, local y is the finger hinge axis,
+        and local z is vertical in the unrotated module frame.
+    -->
+    <body name="root" pos="0 0 0.525" quat="1 0 0 0">
+        <geom name="base_mujoco" type="mesh" class="root_collision"
+              rgba="0.5 0.5 0.8 1" mesh="base_mujoco"/>
+
+        <!-- Right module: local +x points towards world +x. -->
+        <body name="robot0:armbase_R" pos="0.066 0 0.0365" quat="1 0 0 0" gravcomp="1">
+            <joint name="robot0:armbase_joint_R" class="dynamixel_xc430"
+                   type="hinge" axis="1 0 0" range="-1.396263402 1.396263402"/>
+            <geom name="armbase_R" type="mesh" class="visual"
+                  rgba="0.6 0.6 0.6 1" mesh="armbase_mujoco"/>
+
+            <body name="robot0:back_R" pos="0.06966176 0.019 0.01229375" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:back_joint_R" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-2.007128640 1.047197551"/>
+                <geom name="back_R" class="arm_link" rgba="1 0.6 0.15 1" mesh="back_mujoco"/>
+                <body name="robot0:short_R" pos="0.061 -0.0165 0" gravcomp="1">
+                    <joint name="robot0:short_joint_R" class="passive_short"
+                           type="hinge" axis="0 1 0" range="0 2.356194490"/>
+                    <geom name="short_R" class="arm_link" rgba="1 0.6 0.15 1" mesh="short"/>
+                    <body name="robot0:long_R" pos="0.072 0.0005 0" quat="0.957184002665 0 0.289480198013 0" gravcomp="1">
+                        <joint name="robot0:elbow_joint_R" class="passive_elbow"
+                               type="hinge" axis="0 1 0" range="-2.129301687 0.523598776"/>
+                        <geom name="long_R" class="arm_link" rgba="1 0.6 0.15 1" mesh="long"/>
+                        <site name="pin:R_long" pos="0 -0.0005 -0.06676632" size="0.002" rgba="1 1 0 0"/>
+                        <body name="hard_tip_R" pos="-0.0422601 -0.003 -0.25418531" gravcomp="1">
+                            <geom name="hard_tip_R" class="Hard_tip" type="sphere"
+                                  size="0.016"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="robot0:front_R" pos="0.0529496 0.019 -0.04071045" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:front_joint_R" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-1.047197551 1.745329252"/>
+                <geom name="front_R" class="arm_link" rgba="1 0.6 0.15 1" mesh="front_mujoco"/>
+                <site name="pin:R_front" pos="0.096 -0.0165 0" size="0.002" rgba="0 0.5 1 0"/>
+            </body>
+        </body>
+
+        <!-- Up module: local +x points towards world +y. -->
+        <body name="robot0:armbase_U" pos="0 0.066 0.0365"
+              quat="0.707106781 0 0 0.707106781" gravcomp="1">
+            <joint name="robot0:armbase_joint_U" class="dynamixel_xc430"
+                   type="hinge" axis="1 0 0" range="-1.396263402 1.396263402"/>
+            <geom name="armbase_U" type="mesh" class="visual"
+                  rgba="0.6 0.6 0.6 1" mesh="armbase_mujoco"/>
+
+            <body name="robot0:back_U" pos="0.06966176 0.019 0.01229375" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:back_joint_U" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-2.007128640 1.047197551"/>
+                <geom name="back_U" class="arm_link" rgba="1 0.6 0.15 1" mesh="back_mujoco"/>
+                <body name="robot0:short_U" pos="0.061 -0.0165 0" gravcomp="1">
+                    <joint name="robot0:short_joint_U" class="passive_short"
+                           type="hinge" axis="0 1 0" range="0 2.356194490"/>
+                    <geom name="short_U" class="arm_link" rgba="1 0.6 0.15 1" mesh="short"/>
+                    <body name="robot0:long_U" pos="0.072 0.0005 0" quat="0.957184002665 0 0.289480198013 0" gravcomp="1">
+                        <joint name="robot0:elbow_joint_U" class="passive_elbow"
+                               type="hinge" axis="0 1 0" range="-2.129301687 0.523598776"/>
+                        <geom name="long_U" class="arm_link" rgba="1 0.6 0.15 1" mesh="long"/>
+                        <site name="pin:U_long" pos="0 -0.0005 -0.06676632" size="0.002" rgba="1 0 1 0"/>
+                        <body name="hard_tip_U" pos="-0.0422601 -0.003 -0.25418531" gravcomp="1">
+                            <geom name="hard_tip_U" class="Hard_tip" type="sphere"
+                                  size="0.016"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="robot0:front_U" pos="0.0529496 0.019 -0.04071045" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:front_joint_U" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-1.047197551 1.745329252"/>
+                <geom name="front_U" class="arm_link" rgba="1 0.6 0.15 1" mesh="front_mujoco"/>
+                <site name="pin:U_front" pos="0.096 -0.0165 0" size="0.002" rgba="0 1 1 0"/>
+            </body>
+        </body>
+
+        <!-- Left module: local +x points towards world -x. -->
+        <body name="robot0:armbase_L" pos="-0.066 0 0.0365" quat="0 0 0 1" gravcomp="1">
+            <joint name="robot0:armbase_joint_L" class="dynamixel_xc430"
+                   type="hinge" axis="1 0 0" range="-1.396263402 1.396263402"/>
+            <geom name="armbase_L" type="mesh" class="visual"
+                  rgba="0.6 0.6 0.6 1" mesh="armbase_mujoco"/>
+
+            <body name="robot0:back_L" pos="0.06966176 0.019 0.01229375" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:back_joint_L" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-2.007128640 1.047197551"/>
+                <geom name="back_L" class="arm_link" rgba="1 0.6 0.15 1" mesh="back_mujoco"/>
+                <body name="robot0:short_L" pos="0.061 -0.0165 0" gravcomp="1">
+                    <joint name="robot0:short_joint_L" class="passive_short"
+                           type="hinge" axis="0 1 0" range="0 2.356194490"/>
+                    <geom name="short_L" class="arm_link" rgba="1 0.6 0.15 1" mesh="short"/>
+                    <body name="robot0:long_L" pos="0.072 0.0005 0" quat="0.957184002665 0 0.289480198013 0" gravcomp="1">
+                        <joint name="robot0:elbow_joint_L" class="passive_elbow"
+                               type="hinge" axis="0 1 0" range="-2.129301687 0.523598776"/>
+                        <geom name="long_L" class="arm_link" rgba="1 0.6 0.15 1" mesh="long"/>
+                        <site name="pin:L_long" pos="0 -0.0005 -0.06676632" size="0.002" rgba="1 0 0 0"/>
+                        <body name="hard_tip_L" pos="-0.0422601 -0.003 -0.25418531" gravcomp="1">
+                            <geom name="hard_tip_L" class="Hard_tip" type="sphere"
+                                  size="0.016"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="robot0:front_L" pos="0.0529496 0.019 -0.04071045" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:front_joint_L" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-1.047197551 1.745329252"/>
+                <geom name="front_L" class="arm_link" rgba="1 0.6 0.15 1" mesh="front_mujoco"/>
+                <site name="pin:L_front" pos="0.096 -0.0165 0" size="0.002" rgba="0 0 1 0"/>
+            </body>
+        </body>
+
+        <!-- Down module: local +x points towards world -y. -->
+        <body name="robot0:armbase_D" pos="0 -0.066 0.0365"
+              quat="0.707106781 0 0 -0.707106781" gravcomp="1">
+            <joint name="robot0:armbase_joint_D" class="dynamixel_xc430"
+                   type="hinge" axis="1 0 0" range="-1.396263402 1.396263402"/>
+            <geom name="armbase_D" type="mesh" class="visual"
+                  rgba="0.6 0.6 0.6 1" mesh="armbase_mujoco"/>
+
+            <body name="robot0:back_D" pos="0.06966176 0.019 0.01229375" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:back_joint_D" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-2.007128640 1.047197551"/>
+                <geom name="back_D" class="arm_link" rgba="1 0.6 0.15 1" mesh="back_mujoco"/>
+                <body name="robot0:short_D" pos="0.061 -0.0165 0" gravcomp="1">
+                    <joint name="robot0:short_joint_D" class="passive_short"
+                           type="hinge" axis="0 1 0" range="0 2.356194490"/>
+                    <geom name="short_D" class="arm_link" rgba="1 0.6 0.15 1" mesh="short"/>
+                    <body name="robot0:long_D" pos="0.072 0.0005 0" quat="0.957184002665 0 0.289480198013 0" gravcomp="1">
+                        <joint name="robot0:elbow_joint_D" class="passive_elbow"
+                               type="hinge" axis="0 1 0" range="-2.129301687 0.523598776"/>
+                        <geom name="long_D" class="arm_link" rgba="1 0.6 0.15 1" mesh="long"/>
+                        <site name="pin:D_long" pos="0 -0.0005 -0.06676632" size="0.002" rgba="1 0 1 0"/>
+                        <body name="hard_tip_D" pos="-0.0422601 -0.003 -0.25418531" gravcomp="1">
+                            <geom name="hard_tip_D" class="Hard_tip" type="sphere"
+                                  size="0.016"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="robot0:front_D" pos="0.0529496 0.019 -0.04071045" quat="0.988361510468 0 0.15212338619 0" gravcomp="1">
+                <joint name="robot0:front_joint_D" class="dynamixel_xc430"
+                       type="hinge" axis="0 1 0" range="-1.047197551 1.745329252"/>
+                <geom name="front_D" class="arm_link" rgba="1 0.6 0.15 1" mesh="front_mujoco"/>
+                <site name="pin:D_front" pos="0.096 -0.0165 0" size="0.002" rgba="0 1 0 0"/>
+            </body>
+        </body>
+    </body>
+</mujoco>

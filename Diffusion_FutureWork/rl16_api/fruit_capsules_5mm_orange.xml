@@ -1,0 +1,45 @@
+<mujoco>
+    <!-- Generated from fruit_capsules_5mm.json; maximum medial spacing is 5 mm. -->
+    <geom name="object_orange_collision_000"
+          class="grasp_object" type="capsule" size="0.003887921"
+          fromto="0.005609633 0.028108600 0.050109227 0.005037167 0.024692253 0.046720790" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_001"
+          class="grasp_object" type="capsule" size="0.008396461"
+          fromto="0.005037167 0.024692253 0.046720790 0.004618667 0.021139202 0.043449781" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_002"
+          class="grasp_object" type="capsule" size="0.013010081"
+          fromto="0.004618667 0.021139202 0.043449781 0.003542203 0.017322101 0.040674846" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_003"
+          class="grasp_object" type="capsule" size="0.017785370"
+          fromto="0.003542203 0.017322101 0.040674846 0.002108783 0.013257140 0.038461789" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_004"
+          class="grasp_object" type="capsule" size="0.022719282"
+          fromto="0.002108783 0.013257140 0.038461789 0.001173057 0.008692222 0.037200268" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_005"
+          class="grasp_object" type="capsule" size="0.027656422"
+          fromto="0.001173057 0.008692222 0.037200268 0.000668840 0.003900067 0.036658397" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_006"
+          class="grasp_object" type="capsule" size="0.034564035"
+          fromto="0.000668840 0.003900067 0.036658397 -0.000136979 -0.000721612 0.035476706" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_007"
+          class="grasp_object" type="capsule" size="0.033459055"
+          fromto="-0.000136979 -0.000721612 0.035476706 -0.000840084 -0.004776033 0.032949548" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_008"
+          class="grasp_object" type="capsule" size="0.028499948"
+          fromto="-0.000840084 -0.004776033 0.032949548 -0.001519086 -0.008348299 0.029742945" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_009"
+          class="grasp_object" type="capsule" size="0.023500231"
+          fromto="-0.001519086 -0.008348299 0.029742945 -0.002692988 -0.011966604 0.026743081" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_010"
+          class="grasp_object" type="capsule" size="0.018478788"
+          fromto="-0.002692988 -0.011966604 0.026743081 -0.004029132 -0.015953841 0.024335641" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_011"
+          class="grasp_object" type="capsule" size="0.013583112"
+          fromto="-0.004029132 -0.015953841 0.024335641 -0.005103696 -0.020217755 0.022290825" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_012"
+          class="grasp_object" type="capsule" size="0.008794308"
+          fromto="-0.005103696 -0.020217755 0.022290825 -0.006195900 -0.024328196 0.019974081" rgba="0 0 0 0"/>
+    <geom name="object_orange_collision_013"
+          class="grasp_object" type="capsule" size="0.004114486"
+          fromto="-0.006195900 -0.024328196 0.019974081 -0.006870152 -0.028016352 0.016911285" rgba="0 0 0 0"/>
+</mujoco>

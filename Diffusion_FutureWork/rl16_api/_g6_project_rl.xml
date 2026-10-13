@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="gripper6_ik_grab_rl_dense_newton">
+    <!--
+      Training-only MJWarp model.  The canonical _g6_project.xml remains the
+      parent IK/planning source; this model removes only the untrained plate so
+      nv is exactly 60, the largest model accepted by MJWarp's dense path.
+    -->
+    <compiler angle="radian" meshdir="mesh" texturedir="mesh"
+              balanceinertia="true"
+              discardvisual="false" autolimits="true"/>
+    <option timestep="0.0005" solver="Newton" jacobian="dense"
+            iterations="150" ls_iterations="20" tolerance="1e-10">
+        <flag warmstart="enable" multiccd="disable"/>
+    </option>
+
+    <include file="_g6_share.xml"/>
+
+    <worldbody>
+        <geom name="floor" pos="0 0 -0.1" size="15 15 1"
+              type="plane" material="matplane" margin="0.001"
+              condim="3" friction="1 0.005 0.0001"
+              contype="0" conaffinity="0"/>
+
+        <include file="_g6_gripper.xml"/>
+
+        <body name="table" pos="0 0 0.25">
+            <geom name="table_geom" type="box" class="platform"
+                  size="0.5 0.5 0.01" rgba="0.70 0.70 0.70 1"
+                  friction="1 0.005 0.0001"/>
+        </body>
+
+        <body name="object_orange" pos="0 0 0.260">
+            <joint name="joint:object_orange" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.033881644" mass="0.047"
+                      fullinertia="0.000025339254525 0.000024733129835 0.000024962197730
+                                   -0.000000087359135 0.000000179791450 -0.000000074710730"/>
+            <geom name="object_orange_visual" class="visual"
+                  mesh="object_ycb_orange_mesh"
+                  pos="0.007142269 0.018368263 0.000248"
+                  material="object_ycb_orange_material"/>
+            <include file="fruit_capsules_5mm_orange.xml"/>
+            <site name="object_orange_reference" pos="0 0 0.033881644"
+                  size="0.002" rgba="1 1 1 0"/>
+        </body>
+
+        <body name="object_cylinder" pos="1.20 0 0.310">
+            <joint name="joint:object_cylinder" type="free" damping="0.05"/>
+            <inertial pos="0 0 0" mass="0.200"
+                      diaginertia="0.0001979166 0.0001979166 0.0000625000"/>
+            <geom name="object_cylinder_geom" class="grasp_object"
+                  type="cylinder" size="0.025 0.050"
+                  rgba="0.20 0.55 0.95 1"/>
+            <site name="object_cylinder_reference" pos="0 0 0" size="0.002"
+                  rgba="1 1 1 0"/>
+        </body>
+
+        <body name="object_banana" pos="1.40 0 0.260">
+            <joint name="joint:object_banana" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.0175339"
+                      mass="0.066"
+                      diaginertia="0.000182556 0.000072699 0.000240405"/>
+            <geom name="object_banana_visual" class="visual"
+                  mesh="object_ycb_banana_mesh"
+                  pos="0.009936102 -0.004072679 0.000407"
+                  material="object_ycb_banana_material"/>
+            <include file="fruit_capsules_5mm_banana.xml"/>
+            <site name="object_banana_reference" pos="0 0 0.0175339"
+                  size="0.002" rgba="1 1 1 0"/>
+        </body>
+
+        <body name="object_pear" pos="1.60 0 0.260">
+            <joint name="joint:object_pear" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.0302195"
+                      mass="0.049"
+                      diaginertia="0.0000588000 0.0000356965 0.0000592900"/>
+            <geom name="object_pear_visual" class="visual"
+                  mesh="object_ycb_pear_mesh"
+                  pos="0.032542734 -0.011075535 0.000179"
+                  material="object_ycb_pear_material"/>
+            <include file="fruit_capsules_5mm_pear.xml"/>
+            <site name="object_pear_reference" pos="0 0 0.0302195"
+                  size="0.002" rgba="1 1 1 0"/>
+        </body>
+
+        <body name="object_strawberry" pos="1.80 0 0.260">
+            <joint name="joint:object_strawberry" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.0213315" mass="0.018"
+                      fullinertia="0.000003730950 0.000003807189 0.000003761649
+                                   -0.000000364221 -0.000000009657 -0.000000111447"/>
+            <geom name="object_strawberry_visual" class="visual"
+                  mesh="object_ycb_strawberry_mesh"
+                  pos="0.00149387 -0.01543268 0.000217"
+                  material="object_ycb_strawberry_material"/>
+            <include file="fruit_capsules_5mm_strawberry.xml"/>
+            <site name="object_strawberry_reference" pos="0 0 0.0213315"
+                  size="0.002" rgba="1 1 1 0"/>
+        </body>
+
+        <body name="object_cone" pos="2.00 0 0.260">
+            <joint name="joint:object_cone" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.030" mass="0.200"
+                      diaginertia="0.000156 0.000156 0.000096"/>
+            <geom name="object_cone_visual" class="visual"
+                  mesh="object_cone_mesh" rgba="0.93 0.43 0.16 1"/>
+            <geom name="object_cone_collision_0" class="grasp_object"
+                  type="mesh" mesh="object_cone_mesh" rgba="0 0 0 0"/>
+            <site name="object_cone_reference" pos="0 0 0.030"
+                  size="0.002" rgba="1 1 1 0"/>
+        </body>
+
+        <light directional="true" diffuse="0.3 0.3 0.3"
+               specular="0.3 0.3 0.3" castshadow="true"
+               pos="0.1 0.1 0.1" dir="0.2 0.1 -0.1"/>
+    </worldbody>
+</mujoco>

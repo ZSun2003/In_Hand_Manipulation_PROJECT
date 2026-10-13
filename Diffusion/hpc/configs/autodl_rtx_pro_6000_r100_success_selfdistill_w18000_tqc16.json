@@ -1,0 +1,72 @@
+{
+  "name": "autodl_rtx_pro_6000_r100_success_selfdistill_w18000_tqc16",
+  "physics": {
+    "worlds": 18000,
+    "physics_substeps": 40,
+    "nconmax": 300,
+    "njmax": 2000,
+    "max_episode_steps": 4000,
+    "cuda_graph": true,
+    "contact_sensor_maxmatch": 64
+  },
+  "ik": {
+    "linear_samples": 51
+  },
+  "demos": {
+    "episodes": 8192,
+    "shard_episodes": 64,
+    "obs_horizon": 2,
+    "action_horizon": 16,
+    "seed": 20260726
+  },
+  "diffusion": {
+    "epochs": 60,
+    "batch_size": 4096,
+    "learning_rate": 0.0003,
+    "hidden_dim": 256,
+    "depth": 6,
+    "diffusion_steps": 100,
+    "inference_steps": 16,
+    "replan_interval": 4,
+    "ema_decay": 0.999
+  },
+  "tqc": {
+    "total_transitions": 5000000,
+    "learning_starts": 20000,
+    "actor_learning_starts": 200000,
+    "replay_capacity": 1000000,
+    "batch_size": 256,
+    "replay_ratio": 8.0,
+    "gradient_steps_per_vector_step": 8,
+    "replay_insert_per_vector_step": 256,
+    "actor_lr": 0.0001,
+    "critic_lr": 0.0001,
+    "alpha_lr": 0.0001,
+    "gamma": 0.99,
+    "tau": 0.005,
+    "critics": 4,
+    "quantiles": 32,
+    "top_quantiles_to_drop": 2,
+    "hidden_dim": 256,
+    "log_std_init": -3.0,
+    "checkpoint_every_transitions": 500000
+  },
+  "curriculum": {
+    "enabled": true,
+    "restrict_screw_spawn_to_opening_half_disk": false,
+    "start_spawn_radius_m": 0.06,
+    "final_spawn_radius_m": 0.1,
+    "fixed_socket_angle_deg": 45.0,
+    "warmup_fraction": 0.05,
+    "full_difficulty_fraction": 0.7
+  },
+  "runtime": {
+    "seed": 20260726,
+    "device": "cuda:0",
+    "dtype": "float32",
+    "log_every_vector_steps": 50,
+    "status_interval_seconds": 10.0,
+    "masked_reset": true,
+    "deterministic": false
+  }
+}

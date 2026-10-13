@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+#PBS -N screw_cx3_adaptive_any
+# Intentionally omit gpu_type: CX3 may allocate RTX6000, A100, or L40S.
+#PBS -l select=1:ncpus=4:mem=64gb:ngpus=1
+#PBS -l walltime=71:50:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+ALLOCATION_STARTED_SECONDS="${SECONDS}"
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+
+ADAPTIVE_ID="${SCREW_ADAPTIVE_ID:-$(screw_job_tag)}"
+if [[ ! "${ADAPTIVE_ID}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+  printf 'ERROR: invalid SCREW_ADAPTIVE_ID: %s\n' "${ADAPTIVE_ID}" >&2
+  exit 64
+fi
+export WARP_CACHE_PATH="${SCREW_HPC_ROOT}/.cache/warp_adaptive_${ADAPTIVE_ID}"
+mkdir -p "${WARP_CACHE_PATH}"
+
+BASE_CONFIG="${SCREW_HPC_ROOT}/configs/cx3_l40s.json"
+RUN_DIR="${SCREW_HPC_ROOT}/runs/cx3_adaptive_${ADAPTIVE_ID}_full"
+SELECTION_DIR="${RUN_DIR}/capacity_selection"
+SELECTION="${SELECTION_DIR}/selection.json"
+SELECTED_CONFIG="${SELECTION_DIR}/selected_config.json"
+SMOKE_DIR="${SCREW_HPC_ROOT}/runs/cx3_adaptive_${ADAPTIVE_ID}_smoke"
+EVAL_EPISODES="${SCREW_EVAL_EPISODES:-1000}"
+MEMORY_CEILING="${SCREW_ADAPTIVE_MEMORY_CEILING:-0.90}"
+PROBE_TIMEOUT="${SCREW_ADAPTIVE_PROBE_TIMEOUT:-5400}"
+
+for required in \
+  "${SCREW_HPC_ROOT}/adaptive_capacity.py" \
+  "${SCREW_HPC_ROOT}/training_stack_preflight.py" \
+  "${SCREW_HPC_ROOT}/preflight.py" \
+  "${SCREW_HPC_ROOT}/pipeline.py" \
+  "${BASE_CONFIG}"; do
+  screw_require_file "${required}"
+done
+
+if ! command -v flock >/dev/null 2>&1; then
+  printf '%s\n' "ERROR: flock is required for adaptive run isolation." >&2
+  exit 69
+fi
+LOCK_FILE="${SCREW_HPC_ROOT}/runs/.cx3_adaptive_${ADAPTIVE_ID}.lock"
+exec 9>>"${LOCK_FILE}"
+if ! flock -n 9; then
+  printf 'ERROR: another job owns adaptive run %s.\n' "${ADAPTIVE_ID}" >&2
+  exit 75
+fi
+printf 'job=%s host=%s acquired_utc=%s\n' \
+  "${PBS_JOBID:-manual}" "$(hostname)" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >&9
+
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" preflight "" \
+  "Any-GPU adaptive run ${ADAPTIVE_ID}: static checks and full-stack capacity sweep."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/preflight.py" \
+  --mode static \
+  --config "${BASE_CONFIG}"
+
+if [[ ! -f "${SELECTION}" ]]; then
+  "${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/adaptive_capacity.py" probe \
+    --base-config "${BASE_CONFIG}" \
+    --run-dir "${SELECTION_DIR}" \
+    --worlds 512 1024 2048 4096 8192 \
+    --require-worlds 512 \
+    --memory-ceiling "${MEMORY_CEILING}" \
+    --physics-steps 96 \
+    --timeout-seconds "${PROBE_TIMEOUT}"
+fi
+screw_require_file "${SELECTION}"
+screw_require_file "${SELECTED_CONFIG}"
+
+# This is the Smoke formal-capacity gate.  On a resumed job it also protects
+# against landing on a smaller random GPU than the one used for selection.
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/adaptive_capacity.py" gate \
+  --run-dir "${SELECTION_DIR}" \
+  --timeout-seconds "${PROBE_TIMEOUT}"
+
+SELECTED_WORLDS="$(
+  "${SCREW_PYTHON}" -c \
+    'import json,sys; print(json.load(open(sys.argv[1]))["selected_training_worlds"])' \
+    "${SELECTION}"
+)"
+SELECTED_GPU="$(
+  "${SCREW_PYTHON}" -c \
+    'import json,sys; print(json.load(open(sys.argv[1]))["gpu_fingerprint"]["pbs_gpu_type"])' \
+    "${SELECTION}"
+)"
+printf '%s\n' \
+  "Adaptive selection id: ${ADAPTIVE_ID}" \
+  "Selection GPU: ${SELECTED_GPU}" \
+  "Selected formal worlds: ${SELECTED_WORLDS}" \
+  "Selected config: ${SELECTED_CONFIG}"
+
+screw_record_job \
+  "${RUN_DIR}" running "" \
+  "Selected ${SELECTED_WORLDS} worlds; running complete smoke and resume checks."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${SCREW_HPC_ROOT}/configs/smoke.json" \
+  --stage smoke \
+  --resume auto \
+  --run-dir "${SMOKE_DIR}"
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${SCREW_HPC_ROOT}/configs/smoke.json" \
+  --stage resume-probe \
+  --resume auto \
+  --run-dir "${SMOKE_DIR}"
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${SCREW_HPC_ROOT}/configs/smoke.json" \
+  --stage smoke \
+  --resume auto \
+  --run-dir "${SMOKE_DIR}"
+
+screw_record_job \
+  "${RUN_DIR}" running "" \
+  "Smoke passed; formal Diffusion + TQC training at ${SELECTED_WORLDS} worlds."
+
+if [[ -n "${SCREW_MAX_RUNTIME:-}" ]]; then
+  FORMAL_RUNTIME="${SCREW_MAX_RUNTIME}"
+else
+  # Leave ten minutes of the 71:50 allocation for a SIGINT checkpoint,
+  # diagnostics, and scheduler shutdown.  Capacity and smoke time are deducted
+  # automatically, so unused qualification time is available to training.
+  ELAPSED_SECONDS=$((SECONDS - ALLOCATION_STARTED_SECONDS))
+  FORMAL_SECONDS=$((71 * 3600 + 40 * 60 - ELAPSED_SECONDS))
+  if ((FORMAL_SECONDS < 1800)); then
+    printf '%s\n' \
+      "ERROR: less than 30 minutes remain for formal training." >&2
+    exit 70
+  fi
+  FORMAL_RUNTIME="${FORMAL_SECONDS}s"
+fi
+
+set +e
+timeout --signal=INT --kill-after=300s "${FORMAL_RUNTIME}" \
+  "${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+    --config "${SELECTED_CONFIG}" \
+    --stage full \
+    --resume auto \
+    --episodes "${EVAL_EPISODES}" \
+    --run-dir "${RUN_DIR}"
+STATUS=$?
+set -e
+
+case "${STATUS}" in
+  0)
+    screw_record_job \
+      "${RUN_DIR}" completed "${STATUS}" \
+      "Adaptive formal pipeline completed at ${SELECTED_WORLDS} worlds."
+    printf 'Adaptive pipeline completed: %s\n' "${RUN_DIR}"
+    ;;
+  124|130)
+    screw_record_job \
+      "${RUN_DIR}" interrupted_resumable "${STATUS}" \
+      "Adaptive pipeline checkpointed at a consistent resumable cursor."
+    printf '%s\n' \
+      "Walltime guard stopped the allocation cleanly." \
+      "Resume with: ./submit_cx3_adaptive_any.sh --resume ${ADAPTIVE_ID}"
+    ;;
+  *)
+    screw_record_job \
+      "${RUN_DIR}" failed "${STATUS}" "Adaptive formal pipeline failed."
+    printf 'Adaptive formal pipeline failed with status %s\n' \
+      "${STATUS}" >&2
+    exit "${STATUS}"
+    ;;
+esac

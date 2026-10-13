@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+#PBS -N screw_cx3_smoke_8192
+#PBS -l select=1:ncpus=4:mem=64gb:ngpus=1:gpu_type=L40S
+#PBS -l walltime=04:00:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+export WARP_CACHE_PATH="${SCREW_HPC_ROOT}/.cache/warp_8192"
+mkdir -p "${WARP_CACHE_PATH}"
+
+CONFIG="${SCREW_HPC_ROOT}/configs/smoke.json"
+PRODUCTION_CONFIG="${SCREW_HPC_ROOT}/configs/cx3_l40s_8192.json"
+screw_require_file "${SCREW_HPC_ROOT}/preflight.py"
+screw_require_file "${SCREW_HPC_ROOT}/pipeline.py"
+screw_require_file "${CONFIG}"
+screw_require_file "${PRODUCTION_CONFIG}"
+
+JOB_TAG="$(screw_job_tag)"
+RUN_DIR="${SCREW_HPC_ROOT}/runs/cx3_smoke_8192_${JOB_TAG}"
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" preflight "" \
+  "Running the aggressive 8192-world CX3 L40S gate."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/preflight.py" \
+  --mode gpu \
+  --config "${PRODUCTION_CONFIG}" \
+  --worlds 8192
+
+screw_record_job \
+  "${RUN_DIR}" running "" "Running the complete smoke pipeline."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage smoke \
+  --resume auto \
+  --run-dir "${RUN_DIR}"
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage resume-probe \
+  --resume auto \
+  --run-dir "${RUN_DIR}"
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage smoke \
+  --resume auto \
+  --run-dir "${RUN_DIR}"
+
+screw_record_job \
+  "${RUN_DIR}" completed 0 \
+  "8192 gate, smoke pipeline, and resume checks passed."
+printf 'Aggressive smoke qualification completed: %s\n' "${RUN_DIR}"

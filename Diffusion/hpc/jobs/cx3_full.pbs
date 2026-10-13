@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+#PBS -N screw_cx3_full
+#PBS -l select=1:ncpus=4:mem=64gb:ngpus=1:gpu_type=L40S
+#PBS -l walltime=71:50:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+
+CONFIG="${SCREW_HPC_ROOT}/configs/cx3_l40s.json"
+screw_require_file "${SCREW_HPC_ROOT}/preflight.py"
+screw_require_file "${SCREW_HPC_ROOT}/pipeline.py"
+screw_require_file "${CONFIG}"
+
+RUN_DIR="${SCREW_HPC_ROOT}/runs/cx3_l40s_full"
+MAX_RUNTIME="${SCREW_MAX_RUNTIME:-71h30m}"
+EVAL_EPISODES="${SCREW_EVAL_EPISODES:-1000}"
+
+if ! command -v flock >/dev/null 2>&1; then
+  printf '%s\n' "ERROR: flock is required to protect the shared full run." >&2
+  exit 69
+fi
+LOCK_FILE="${SCREW_HPC_ROOT}/runs/.cx3_l40s_full.lock"
+exec 9>>"${LOCK_FILE}"
+if ! flock -n 9; then
+  printf '%s\n' \
+    "ERROR: another cx3_l40s_full job owns ${LOCK_FILE}." >&2
+  exit 75
+fi
+printf 'job=%s host=%s acquired_utc=%s\n' \
+  "${PBS_JOBID:-manual}" "$(hostname)" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >&9
+
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" preflight "" "Running the production CX3 L40S gate."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/preflight.py" \
+  --mode gpu \
+  --config "${CONFIG}" \
+  --worlds 1024
+
+screw_record_job \
+  "${RUN_DIR}" running "" \
+  "Formal demo, Diffusion, TQC, and ${EVAL_EPISODES}-episode deterministic evaluation pipeline."
+
+set +e
+timeout --signal=INT --kill-after=300s "${MAX_RUNTIME}" \
+  "${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+    --config "${CONFIG}" \
+    --stage full \
+    --resume auto \
+    --episodes "${EVAL_EPISODES}" \
+    --run-dir "${RUN_DIR}"
+STATUS=$?
+set -e
+
+case "${STATUS}" in
+  0)
+    screw_record_job \
+      "${RUN_DIR}" completed "${STATUS}" \
+      "Formal pipeline completed, including ${EVAL_EPISODES} deterministic evaluation episodes."
+    printf 'Formal pipeline completed: %s\n' "${RUN_DIR}"
+    ;;
+  124|130)
+    screw_record_job \
+      "${RUN_DIR}" interrupted_resumable "${STATUS}" \
+      "Pipeline stopped at a consistent resumable cursor."
+    printf '%s\n' \
+      "Walltime guard stopped this allocation cleanly." \
+      "Resubmit jobs/cx3_full.pbs to continue from ${RUN_DIR}."
+    ;;
+  *)
+    screw_record_job \
+      "${RUN_DIR}" failed "${STATUS}" "Formal pipeline failed."
+    printf 'Formal pipeline failed with status %s\n' "${STATUS}" >&2
+    exit "${STATUS}"
+    ;;
+esac

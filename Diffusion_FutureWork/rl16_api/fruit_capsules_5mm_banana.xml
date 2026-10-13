@@ -1,0 +1,132 @@
+<mujoco>
+    <!-- Generated from fruit_capsules_5mm.json; maximum medial spacing is 5 mm. -->
+    <geom name="object_banana_collision_000"
+          class="grasp_object" type="capsule" size="0.005868465"
+          fromto="0.071478227 0.074109831 0.006036009 0.067096289 0.071838734 0.006433844" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_001"
+          class="grasp_object" type="capsule" size="0.005449882"
+          fromto="0.067096289 0.071838734 0.006433844 0.062253195 0.070972500 0.007206208" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_002"
+          class="grasp_object" type="capsule" size="0.005549945"
+          fromto="0.062253195 0.070972500 0.007206208 0.057405960 0.070165680 0.008039789" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_003"
+          class="grasp_object" type="capsule" size="0.005798113"
+          fromto="0.057405960 0.070165680 0.008039789 0.052700724 0.068913998 0.009108491" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_004"
+          class="grasp_object" type="capsule" size="0.006675245"
+          fromto="0.052700724 0.068913998 0.009108491 0.048044163 0.067640938 0.010359245" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_005"
+          class="grasp_object" type="capsule" size="0.008263149"
+          fromto="0.048044163 0.067640938 0.010359245 0.043405044 0.066340312 0.011642272" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_006"
+          class="grasp_object" type="capsule" size="0.010655607"
+          fromto="0.043405044 0.066340312 0.011642272 0.039008078 0.064502112 0.013087791" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_007"
+          class="grasp_object" type="capsule" size="0.013172155"
+          fromto="0.039008078 0.064502112 0.013087791 0.035017488 0.061725348 0.014151176" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_008"
+          class="grasp_object" type="capsule" size="0.014908426"
+          fromto="0.035017488 0.061725348 0.014151176 0.031393998 0.058367964 0.014824561" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_009"
+          class="grasp_object" type="capsule" size="0.015870186"
+          fromto="0.031393998 0.058367964 0.014824561 0.027888605 0.054887904 0.015506513" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_010"
+          class="grasp_object" type="capsule" size="0.016767482"
+          fromto="0.027888605 0.054887904 0.015506513 0.024424719 0.051424719 0.016442900" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_011"
+          class="grasp_object" type="capsule" size="0.017637739"
+          fromto="0.024424719 0.051424719 0.016442900 0.020942149 0.047942149 0.017221736" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_012"
+          class="grasp_object" type="capsule" size="0.015676255"
+          fromto="0.020942149 0.047942149 0.017221736 0.017439564 0.044439564 0.017798052" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_013"
+          class="grasp_object" type="capsule" size="0.018940880"
+          fromto="0.017439564 0.044439564 0.017798052 0.013930198 0.040929954 0.018285007" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_014"
+          class="grasp_object" type="capsule" size="0.017407176"
+          fromto="0.013930198 0.040929954 0.018285007 0.010425894 0.037413044 0.018753464" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_015"
+          class="grasp_object" type="capsule" size="0.017912082"
+          fromto="0.010425894 0.037413044 0.018753464 0.006990164 0.033806891 0.018970742" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_016"
+          class="grasp_object" type="capsule" size="0.018836844"
+          fromto="0.006990164 0.033806891 0.018970742 0.003930946 0.029874560 0.018999346" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_017"
+          class="grasp_object" type="capsule" size="0.018255988"
+          fromto="0.003930946 0.029874560 0.018999346 0.001356415 0.025604418 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_018"
+          class="grasp_object" type="capsule" size="0.018519784"
+          fromto="0.001356415 0.025604418 0.019000000 -0.001042859 0.021233288 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_019"
+          class="grasp_object" type="capsule" size="0.018588784"
+          fromto="-0.001042859 0.021233288 0.019000000 -0.003100714 0.016692162 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_020"
+          class="grasp_object" type="capsule" size="0.018572237"
+          fromto="-0.003100714 0.016692162 0.019000000 -0.004916578 0.012047831 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_021"
+          class="grasp_object" type="capsule" size="0.018527362"
+          fromto="-0.004916578 0.012047831 0.019000000 -0.006552028 0.007336803 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_022"
+          class="grasp_object" type="capsule" size="0.018505480"
+          fromto="-0.006552028 0.007336803 0.019000000 -0.008122398 0.002603517 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_023"
+          class="grasp_object" type="capsule" size="0.018444333"
+          fromto="-0.008122398 0.002603517 0.019000000 -0.009484961 -0.002191374 0.019000000" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_024"
+          class="grasp_object" type="capsule" size="0.018412664"
+          fromto="-0.009484961 -0.002191374 0.019000000 -0.010288997 -0.007111866 0.018999995" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_025"
+          class="grasp_object" type="capsule" size="0.018127732"
+          fromto="-0.010288997 -0.007111866 0.018999995 -0.010889122 -0.012061287 0.018993469" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_026"
+          class="grasp_object" type="capsule" size="0.017110161"
+          fromto="-0.010889122 -0.012061287 0.018993469 -0.011202523 -0.017032369 0.018795329" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_027"
+          class="grasp_object" type="capsule" size="0.017580193"
+          fromto="-0.011202523 -0.017032369 0.018795329 -0.011793302 -0.021948592 0.018206698" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_028"
+          class="grasp_object" type="capsule" size="0.018825588"
+          fromto="-0.011793302 -0.021948592 0.018206698 -0.011993341 -0.026924057 0.018006659" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_029"
+          class="grasp_object" type="capsule" size="0.017067196"
+          fromto="-0.011993341 -0.026924057 0.018006659 -0.011999996 -0.031911040 0.017999963" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_030"
+          class="grasp_object" type="capsule" size="0.016210496"
+          fromto="-0.011999996 -0.031911040 0.017999963 -0.012000000 -0.036898004 0.017986156" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_031"
+          class="grasp_object" type="capsule" size="0.017374796"
+          fromto="-0.012000000 -0.036898004 0.017986156 -0.012000000 -0.041874610 0.017705643" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_032"
+          class="grasp_object" type="capsule" size="0.015767749"
+          fromto="-0.012000000 -0.041874610 0.017705643 -0.012000000 -0.046827819 0.017132511" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_033"
+          class="grasp_object" type="capsule" size="0.016413954"
+          fromto="-0.012000000 -0.046827819 0.017132511 -0.012000000 -0.051808754 0.016892814" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_034"
+          class="grasp_object" type="capsule" size="0.015426508"
+          fromto="-0.012000000 -0.051808754 0.016892814 -0.012000000 -0.056763628 0.016337445" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_035"
+          class="grasp_object" type="capsule" size="0.016125076"
+          fromto="-0.012000000 -0.056763628 0.016337445 -0.011999837 -0.061737705 0.016019294" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_036"
+          class="grasp_object" type="capsule" size="0.016041052"
+          fromto="-0.011999837 -0.061737705 0.016019294 -0.011972229 -0.066724271 0.015972318" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_037"
+          class="grasp_object" type="capsule" size="0.015084036"
+          fromto="-0.011972229 -0.066724271 0.015972318 -0.011606921 -0.071678623 0.015606367" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_038"
+          class="grasp_object" type="capsule" size="0.013972571"
+          fromto="-0.011606921 -0.071678623 0.015606367 -0.011087591 -0.076603119 0.015034859" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_039"
+          class="grasp_object" type="capsule" size="0.012377719"
+          fromto="-0.011087591 -0.076603119 0.015034859 -0.011001371 -0.081558542 0.014493586" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_040"
+          class="grasp_object" type="capsule" size="0.010985619"
+          fromto="-0.011001371 -0.081558542 0.014493586 -0.011001515 -0.086522926 0.014048553" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_041"
+          class="grasp_object" type="capsule" size="0.009577762"
+          fromto="-0.011001515 -0.086522926 0.014048553 -0.011104203 -0.091507512 0.014000457" rgba="0 0 0 0"/>
+    <geom name="object_banana_collision_042"
+          class="grasp_object" type="capsule" size="0.004189475"
+          fromto="-0.011104203 -0.091507512 0.014000457 -0.011910854 -0.096419403 0.014000000" rgba="0 0 0 0"/>
+</mujoco>

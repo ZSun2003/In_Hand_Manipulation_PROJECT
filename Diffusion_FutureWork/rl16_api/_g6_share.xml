@@ -1,0 +1,197 @@
+<mujoco>
+    <size njmax="2000" nconmax="300" nuser_jnt="1" nuser_site="1" nuser_sensor="1" nuser_actuator="16" nstack="600000"/>
+
+    <visual>
+        <global offwidth="1280" offheight="960"/>
+        <map fogstart="3" fogend="5" force="0.1"/>
+        <quality shadowsize="4096"/>
+    </visual>
+
+    <asset>
+        <!-- Skybox -->
+        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+        <!-- Floor -->
+        <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+        <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="100 100" texuniform="true"/>
+        <material name="soft_rubber_tip_material"
+                  rgba="0.055 0.060 0.065 1"
+                  specular="0.05" shininess="0.08"/>
+
+        <!-- Latest meshes.  All four fingers share the same local assets. -->
+        <mesh name="base_mujoco" file="base_mujoco.STL"/>
+        <mesh name="handbase_module_mujoco" file="handbase_module_mujoco.STL"/>
+        <mesh name="linear_module_mujoco" file="linear_module_mujoco.STL"/>
+        <mesh name="backbased_mujoco" file="backbased_mujoco.STL"/>
+        <mesh name="frontbased_mujoco" file="frontbased_mujoco.STL"/>
+        <mesh name="short" file="short.STL"/>
+        <mesh name="long" file="long.STL"/>
+        <include file="_g6_object_assets.xml"/>
+    </asset>
+
+    <default>
+        <default class="visual">
+            <geom type="mesh" solref=".004 1" contype="0" conaffinity="0" group="0"/>
+        </default>
+
+        <default class="collision">
+            <!-- Collision bits: link=1, hard_tip=2, cube/object=4, table=8, root=16. -->
+            <default class="arm_link">
+                <geom type="mesh" contype="1" conaffinity="27" group="0" priority="1" solref="0.010 1" solimp="0.90 0.97 0.001"/>
+            </default>
+
+            <default class="Hard_tip">
+                <!--
+                  The physical "hard-tip" module is modelled with a slightly
+                  compliant rubber coating: a 15 ms contact time constant,
+                  1 mm impedance transition, and high rubber-like friction.
+                  This is deliberately only moderately soft so the hard-tip
+                  module remains dimensionally stable while its coating yields.
+                -->
+                <geom type="sphere" material="soft_rubber_tip_material"
+                      contype="2" conaffinity="15" condim="3"
+                      friction="1.6 0.015 0.0015"
+                      solref="0.015 1"
+                      solimp="0.95 0.98 0.001 0.5 2"
+                      margin="0.0005" priority="2"/>
+            </default>
+
+            <default class="platform">
+                <geom contype="8" conaffinity="7" group="1" mass="1e3"
+                      condim="6" friction="1.0 0.01 0.0002"/>
+            </default>
+
+            <default class="root_collision">
+                <geom type="mesh" contype="16" conaffinity="1" group="0" density="0" priority="1"/>
+            </default>
+
+            <default class="grasp_object">
+                <!-- Match the numerically stable SCREW contact profile: keep
+                     normal, tangential and torsional friction while avoiding
+                     the two rolling-friction rows that make 40k-world sparse
+                     contact transitions unnecessarily ill-conditioned. -->
+                <geom contype="4" conaffinity="11" condim="4"
+                      friction="1.0 0.01 0.0002"
+                      solref="0.004 1"
+                      solimp="0.95 0.99 0.001"
+                      priority="1" margin="0.0003" group="1"/>
+            </default>
+        </default>
+
+
+
+        <!-- The twelve rotary active joints use the same Dynamixel XC-430 model. -->
+        <default class="dynamixel_xc430">
+            <joint type="hinge" damping="0.02" armature="0.02" frictionloss="0.02"/>
+        </default>
+
+        <!-- Four linear modules translate along their local z axes. -->
+        <default class="linear_slide">
+            <joint type="slide" damping="0.02" armature="0.02"
+                   frictionloss="0.02" solreflimit="1e-5"/>
+        </default>
+
+        <!-- Active command ranges match the physical joint ranges in _g6_gripper.xml. -->
+        <default class="linear_position_actuator">
+            <position ctrlrange="-0.05 0"
+                      kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+        </default>
+
+        <default class="back_position_actuator">
+            <position ctrlrange="-2.007128640 1.047197551"
+                      kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+        </default>
+
+        <default class="front_position_actuator">
+            <position ctrlrange="-1.047197551 1.745329252"
+                      kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+        </default>
+
+        <default class="passive_elbow">
+            <joint type="hinge" damping="0.02" armature="0.02" solreflimit="1e-5"/>
+        </default>
+
+        <default class="passive_short">
+            <joint type="hinge" damping="0.02" armature="0.02" solreflimit="1e-5"/>
+        </default>
+    </default>
+
+    <contact>
+        <exclude name="exclude_U_back_short" body1="robot0:back_U" body2="robot0:short_U"/>
+        <exclude name="exclude_U_back_long" body1="robot0:back_U" body2="robot0:long_U"/>
+        <exclude name="exclude_U_back_front" body1="robot0:back_U" body2="robot0:front_U"/>
+        <exclude name="exclude_U_short_long" body1="robot0:short_U" body2="robot0:long_U"/>
+        <exclude name="exclude_U_short_front" body1="robot0:short_U" body2="robot0:front_U"/>
+        <exclude name="exclude_U_long_front" body1="robot0:long_U" body2="robot0:front_U"/>
+
+        <exclude name="exclude_D_back_short" body1="robot0:back_D" body2="robot0:short_D"/>
+        <exclude name="exclude_D_back_long" body1="robot0:back_D" body2="robot0:long_D"/>
+        <exclude name="exclude_D_back_front" body1="robot0:back_D" body2="robot0:front_D"/>
+        <exclude name="exclude_D_short_long" body1="robot0:short_D" body2="robot0:long_D"/>
+        <exclude name="exclude_D_short_front" body1="robot0:short_D" body2="robot0:front_D"/>
+        <exclude name="exclude_D_long_front" body1="robot0:long_D" body2="robot0:front_D"/>
+
+        <exclude name="exclude_L_back_short" body1="robot0:back_L" body2="robot0:short_L"/>
+        <exclude name="exclude_L_back_long" body1="robot0:back_L" body2="robot0:long_L"/>
+        <exclude name="exclude_L_back_front" body1="robot0:back_L" body2="robot0:front_L"/>
+        <exclude name="exclude_L_short_long" body1="robot0:short_L" body2="robot0:long_L"/>
+        <exclude name="exclude_L_short_front" body1="robot0:short_L" body2="robot0:front_L"/>
+        <exclude name="exclude_L_long_front" body1="robot0:long_L" body2="robot0:front_L"/>
+
+        <exclude name="exclude_R_back_short" body1="robot0:back_R" body2="robot0:short_R"/>
+        <exclude name="exclude_R_back_long" body1="robot0:back_R" body2="robot0:long_R"/>
+        <exclude name="exclude_R_back_front" body1="robot0:back_R" body2="robot0:front_R"/>
+        <exclude name="exclude_R_short_long" body1="robot0:short_R" body2="robot0:long_R"/>
+        <exclude name="exclude_R_short_front" body1="robot0:short_R" body2="robot0:front_R"/>
+        <exclude name="exclude_R_long_front" body1="robot0:long_R" body2="robot0:front_R"/>
+    </contact>
+
+    <equality>
+        <connect name="Connect_L" active="true" site1="pin:L_long" site2="pin:L_front" solref="0.001 1" solimp="0.99 0.999 0.001"/>
+
+        <connect name="Connect_R" active="true" site1="pin:R_long" site2="pin:R_front" solref="0.001 1" solimp="0.99 0.999 0.001"/>
+
+        <connect name="Connect_U" active="true" site1="pin:U_long" site2="pin:U_front" solref="0.001 1" solimp="0.99 0.999 0.001"/>
+
+        <connect name="Connect_D" active="true" site1="pin:D_long" site2="pin:D_front" solref="0.001 1" solimp="0.99 0.999 0.001"/>
+    </equality>
+
+    <actuator>
+        <position name="R_linear" class="linear_position_actuator"
+                  joint="robot0:linear_joint_R"/>
+
+        <position name="R_back" class="back_position_actuator" joint="robot0:back_joint_R"/>
+
+        <position name="R_front" class="front_position_actuator" joint="robot0:front_joint_R"/>
+
+        <position name="L_linear" class="linear_position_actuator"
+                  joint="robot0:linear_joint_L"/>
+
+        <position name="L_front" class="front_position_actuator" joint="robot0:front_joint_L"/>
+
+        <position name="L_back" class="back_position_actuator" joint="robot0:back_joint_L"/>
+
+        <position name="D_linear" class="linear_position_actuator"
+                  joint="robot0:linear_joint_D"/>
+
+        <position name="D_back" class="back_position_actuator" joint="robot0:back_joint_D"/>
+
+        <position name="D_front" class="front_position_actuator" joint="robot0:front_joint_D"/>
+
+        <position name="U_linear" class="linear_position_actuator"
+                  joint="robot0:linear_joint_U"/>
+
+        <position name="U_front" class="front_position_actuator" joint="robot0:front_joint_U"/>
+
+        <position name="U_back" class="back_position_actuator" joint="robot0:back_joint_U"/>
+
+        <position name="U_armbase" joint="robot0:armbase_joint_U" ctrlrange="-1.396263402 1.396263402" kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+
+        <position name="D_armbase" joint="robot0:armbase_joint_D" ctrlrange="-1.396263402 1.396263402" kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+
+        <position name="L_armbase" joint="robot0:armbase_joint_L" ctrlrange="-1.396263402 1.396263402" kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+
+        <position name="R_armbase" joint="robot0:armbase_joint_R" ctrlrange="-1.396263402 1.396263402" kp="600" kv="40" gear="1" forcerange="-1000 1000"/>
+
+    </actuator>
+
+</mujoco>

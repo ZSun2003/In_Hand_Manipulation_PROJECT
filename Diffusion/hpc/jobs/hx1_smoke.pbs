@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#PBS -N screw_mjw_smoke
+#PBS -q hx
+#PBS -l select=1:ncpus=18:mem=200gb:ngpus=1:gpu_type=A100
+#PBS -l walltime=01:00:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+
+CONFIG="${SCREW_HPC_ROOT}/configs/smoke.json"
+PRODUCTION_CONFIG="${SCREW_HPC_ROOT}/configs/hx1_a100.json"
+screw_require_file "${SCREW_HPC_ROOT}/preflight.py"
+screw_require_file "${SCREW_HPC_ROOT}/pipeline.py"
+screw_require_file "${CONFIG}"
+screw_require_file "${PRODUCTION_CONFIG}"
+
+JOB_TAG="$(screw_job_tag)"
+RUN_DIR="${SCREW_HPC_ROOT}/runs/hx1_smoke_${JOB_TAG}"
+
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" \
+  preflight \
+  "" \
+  "Running the 1024-world production CUDA qualification gate."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/preflight.py" \
+  --mode gpu \
+  --config "${PRODUCTION_CONFIG}" \
+  --worlds 1024
+
+screw_record_job \
+  "${RUN_DIR}" running "" "Running the complete smoke pipeline."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage smoke \
+  --resume auto \
+  --run-dir "${RUN_DIR}"
+
+printf 'Initial smoke pipeline completed: %s\n' "${RUN_DIR}"
+
+# Restore the exact full TQC cursor and actually execute one unsaved vector
+# step.  This covers MJWarp/task/controller/RNG continuation rather than only
+# parsing a checkpoint that has already reached total_transitions.
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage resume-probe \
+  --resume auto \
+  --run-dir "${RUN_DIR}"
+
+# Run the exact same command a second time.  The dataset and both checkpoints
+# must be reopened from RUN_DIR; this catches checkpoint/schema/config pairing
+# or resume-cursor failures before a 72-hour production allocation is submitted.
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage smoke \
+  --resume auto \
+  --run-dir "${RUN_DIR}"
+
+screw_record_job \
+  "${RUN_DIR}" completed 0 "Smoke pipeline and resume checks passed."
+printf 'Smoke checkpoint reload/resume validated: %s\n' "${RUN_DIR}"

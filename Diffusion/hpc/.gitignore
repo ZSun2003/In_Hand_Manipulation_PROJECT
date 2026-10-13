@@ -1,0 +1,31 @@
+# Environments are centrally managed under IRP/HPC_ENV and never packaged.
+**/RL_env/
+**/.venv/
+**/venv/
+**/.virtualenv/
+**/.python/
+**/_g6_python_runtime/
+**/.wheelhouse/
+
+# Node-local or project-local caches.
+.cache/
+.mujoco/
+__pycache__/
+*.py[cod]
+
+# Large generated training state.
+datasets/
+checkpoints/
+runs/
+outputs/
+logs/
+wheelhouse/
+
+# Generated environment provenance (recreated by setup_hpc.sh).
+environment-manifest.txt
+
+# Scheduler output and local operating-system files.
+*.o[0-9]*
+*.e[0-9]*
+slurm-*.out
+.DS_Store

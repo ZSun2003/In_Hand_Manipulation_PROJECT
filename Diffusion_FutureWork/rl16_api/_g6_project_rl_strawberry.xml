@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="gripper6_ik_grab_rl_strawberry_dense_newton">
+    <!-- Training-only single-object MJWarp model. -->
+    <compiler angle="radian" meshdir="mesh" texturedir="mesh"
+              balanceinertia="true"
+              discardvisual="false" autolimits="true"/>
+    <option timestep="0.0005" solver="Newton" jacobian="dense"
+            iterations="150" ls_iterations="20" tolerance="1e-10">
+        <flag warmstart="enable" multiccd="disable"/>
+    </option>
+
+    <include file="_g6_share.xml"/>
+
+    <worldbody>
+        <geom name="floor" pos="0 0 -0.1" size="15 15 1"
+              type="plane" material="matplane" margin="0.001"
+              condim="3" friction="1 0.005 0.0001"
+              contype="0" conaffinity="0"/>
+        <include file="_g6_gripper.xml"/>
+        <body name="table" pos="0 0 0.25">
+            <geom name="table_geom" type="box" class="platform"
+                  size="0.5 0.5 0.01" rgba="0.70 0.70 0.70 1"
+                  friction="1 0.005 0.0001"/>
+        </body>
+        <body name="object_strawberry" pos="0 0 0.318668500">
+            <joint name="joint:object_strawberry" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.0213315" mass="0.018"
+                      fullinertia="0.000003730950 0.000003807189 0.000003761649
+                                   -0.000000364221 -0.000000009657 -0.000000111447"/>
+            <geom name="object_strawberry_visual" class="visual"
+                  mesh="object_ycb_strawberry_mesh"
+                  pos="0.00149387 -0.01543268 0.000217"
+                  material="object_ycb_strawberry_material"/>
+            <include file="fruit_capsules_5mm_strawberry.xml"/>
+            <site name="object_strawberry_reference" pos="0 0 0.0213315"
+                  size="0.002" rgba="1 1 1 0"/>
+        </body>
+        <light directional="true" diffuse="0.3 0.3 0.3"
+               specular="0.3 0.3 0.3" castshadow="true"
+               pos="0.1 0.1 0.1" dir="0.2 0.1 -0.1"/>
+    </worldbody>
+</mujoco>

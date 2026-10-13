@@ -1,0 +1,3 @@
+# Minimal CPU-only dependencies for the analytic workspace scan.
+# Install only through R3_setup_cx.sh so they live in Rotation_G3/CX_env.
+numpy==2.4.4

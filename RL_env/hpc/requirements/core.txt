@@ -1,0 +1,12 @@
+# Shared Diffusion and YCB GRAB HPC/MJWarp runtime.
+# torch is installed separately from the official cu128 index by build.sh.
+mujoco==3.10.0
+mujoco-warp==3.10.0.3
+warp-lang==1.14.0
+numpy==2.4.4
+tensorboard==2.21.0
+tqdm==4.67.3
+psutil==7.2.2
+nvidia-ml-py==13.610.43
+packaging==26.2
+typing-extensions==4.16.0

@@ -1,0 +1,14 @@
+# Commit environment management code and dependency files, not installed runtimes.
+/bin/
+/lib/
+/lib64
+/include/
+/share/
+/pyvenv.cfg
+/.python/
+/profiles/
+/hpc/state/
+/hpc/cache/
+__pycache__/
+*.pyc
+.DS_Store

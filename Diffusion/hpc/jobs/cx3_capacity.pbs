@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#PBS -N screw_cx3_capacity
+#PBS -l select=1:ncpus=4:mem=64gb:ngpus=1:gpu_type=L40S
+#PBS -l walltime=02:00:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+
+CONFIG="${SCREW_HPC_ROOT}/configs/cx3_l40s.json"
+screw_require_file "${SCREW_HPC_ROOT}/capacity_probe.py"
+screw_require_file "${CONFIG}"
+
+JOB_TAG="$(screw_job_tag)"
+RUN_DIR="${SCREW_HPC_ROOT}/runs/cx3_capacity_${JOB_TAG}"
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" running "" "Probing 128, 256, 512, and 1024 MJWarp worlds."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/capacity_probe.py" \
+  --config "${CONFIG}" \
+  --run-dir "${RUN_DIR}" \
+  --worlds 128 256 512 1024 \
+  --require-worlds 1024
+
+screw_record_job \
+  "${RUN_DIR}" completed 0 "CX3 L40S 1024-world capacity gate passed."
+printf 'Capacity qualification completed: %s\n' "${RUN_DIR}"

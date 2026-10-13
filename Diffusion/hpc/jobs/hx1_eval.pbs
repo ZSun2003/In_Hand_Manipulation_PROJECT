@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#PBS -N screw_mjw_eval
+#PBS -q hx
+#PBS -l select=1:ncpus=18:mem=200gb:ngpus=1:gpu_type=A100
+#PBS -l walltime=04:00:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+
+CONFIG="${SCREW_HPC_ROOT}/configs/hx1_a100.json"
+CHECKPOINT="${SCREW_HPC_ROOT}/runs/hx1_full/checkpoints/residual_tqc_policy.pt"
+EPISODES="${SCREW_EVAL_EPISODES:-100}"
+
+screw_require_file "${SCREW_HPC_ROOT}/preflight.py"
+screw_require_file "${SCREW_HPC_ROOT}/pipeline.py"
+screw_require_file "${CONFIG}"
+screw_require_file "${CHECKPOINT}"
+
+JOB_TAG="$(screw_job_tag)"
+RUN_DIR="${SCREW_HPC_ROOT}/runs/hx1_eval_${JOB_TAG}"
+
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" preflight "" "Running evaluation CUDA preflight."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/preflight.py" \
+  --mode gpu \
+  --config "${CONFIG}" \
+  --worlds 64
+
+screw_record_job \
+  "${RUN_DIR}" running "" "Deterministic evaluation is running."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+  --config "${CONFIG}" \
+  --stage eval \
+  --checkpoint "${CHECKPOINT}" \
+  --episodes "${EPISODES}" \
+  --run-dir "${RUN_DIR}"
+
+screw_record_job \
+  "${RUN_DIR}" completed 0 "Deterministic evaluation completed."
+printf 'Evaluation completed: %s\n' "${RUN_DIR}"

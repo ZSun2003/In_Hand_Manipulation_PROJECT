@@ -1,0 +1,8 @@
+/profiles/
+/state/
+/cache/
+/wheelhouse/
+/*.tar.gz
+/*.sha256
+*.pyc
+__pycache__/

@@ -1,0 +1,16 @@
+# CUDA PyTorch is installed once by RL_env/build.sh --profile core in the shared core
+# profile.  Diffusion/hpc/setup_hpc.sh only validates that external environment and
+# never installs or upgrades it.
+torch==2.7.1
+
+# Official MuJoCo Warp release contract used by this project.
+mujoco-warp==3.10.0.3
+mujoco==3.10.0
+warp-lang==1.14.0
+
+# Training, logging, configuration, and diagnostics.
+numpy>=1.26,<3
+tqdm>=4.66,<5
+tensorboard>=2.17,<3
+psutil>=5.9,<8
+packaging>=24,<27

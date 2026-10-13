@@ -1,0 +1,33 @@
+<mujoco>
+    <!-- Generated from fruit_capsules_5mm.json; maximum medial spacing is 5 mm. -->
+    <geom name="object_strawberry_collision_000"
+          class="grasp_object" type="capsule" size="0.003747655"
+          fromto="0.016046705 0.015046705 0.021000000 0.012646865 0.011648077 0.021000000" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_001"
+          class="grasp_object" type="capsule" size="0.007665595"
+          fromto="0.012646865 0.011648077 0.021000000 0.009234023 0.008262537 0.020999368" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_002"
+          class="grasp_object" type="capsule" size="0.012934998"
+          fromto="0.009234023 0.008262537 0.020999368 0.005736234 0.004965545 0.020976892" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_003"
+          class="grasp_object" type="capsule" size="0.017212454"
+          fromto="0.005736234 0.004965545 0.020976892 0.002126839 0.001803173 0.020728179" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_004"
+          class="grasp_object" type="capsule" size="0.021218552"
+          fromto="0.002126839 0.001803173 0.020728179 -0.001336973 -0.001391692 0.019807740" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_005"
+          class="grasp_object" type="capsule" size="0.016758607"
+          fromto="-0.001336973 -0.001391692 0.019807740 -0.004613116 -0.004616782 0.018403815" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_006"
+          class="grasp_object" type="capsule" size="0.014146681"
+          fromto="-0.004613116 -0.004616782 0.018403815 -0.007902398 -0.007902458 0.017189521" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_007"
+          class="grasp_object" type="capsule" size="0.011638068"
+          fromto="-0.007902398 -0.007902458 0.017189521 -0.011259292 -0.011259292 0.016443334" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_008"
+          class="grasp_object" type="capsule" size="0.008109555"
+          fromto="-0.011259292 -0.011259292 0.016443334 -0.014648154 -0.014648154 0.016085692" rgba="0 0 0 0"/>
+    <geom name="object_strawberry_collision_009"
+          class="grasp_object" type="capsule" size="0.003555640"
+          fromto="-0.014648154 -0.014648154 0.016085692 -0.018046709 -0.018046709 0.016004617" rgba="0 0 0 0"/>
+</mujoco>

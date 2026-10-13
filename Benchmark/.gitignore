@@ -1,0 +1,29 @@
+# Runtime caches
+__pycache__/
+*.py[cod]
+.cache/
+.pytest_cache/
+.mplconfig/
+.DS_Store
+~$*
+
+# Local environments belong under repository-level RL_env
+RL_env/
+.venv/
+venv/
+CX_env/
+
+# Reproduced numerical outputs and batch-job logs
+*_outputs*/
+*.csv
+*.jsonl
+*.npz
+*.npy
+*.log
+*.o[0-9]*
+*.e[0-9]*
+*.png
+*.pdf
+*.svg
+*.tar.gz
+*.zip

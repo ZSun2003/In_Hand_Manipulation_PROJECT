@@ -1,0 +1,10 @@
+# Install torch==2.7.1 from https://download.pytorch.org/whl/cu128 first.
+# This is the AutoDL RTX PRO 6000 stack already validated by SCREW/S_HPC.
+torch==2.7.1
+mujoco==3.10.0
+mujoco-warp==3.10.0.3
+warp-lang==1.14.0
+numpy>=1.26,<3
+matplotlib==3.10.8
+psutil>=5.9,<8
+packaging>=24,<27

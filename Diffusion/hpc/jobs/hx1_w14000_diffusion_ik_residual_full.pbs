@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+#PBS -N screw_hx1_w14k_tqc
+#PBS -q hx
+#PBS -l select=1:ncpus=18:mem=250gb:ngpus=1:gpu_type=A100
+#PBS -l walltime=71:50:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+set -euo pipefail
+
+SUBMIT_DIR="${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}"
+# shellcheck source=_common.sh
+source "${SUBMIT_DIR}/jobs/_common.sh"
+screw_hpc_init
+
+CONFIG="${SCREW_HPC_ROOT}/configs/hx1_a100_w14000_diffusion_ik_residual.json"
+RUN_DIR="${SCREW_HPC_ROOT}/runs/hx1_a100_w14000_diffusion_ik_residual_full"
+# HX1's GNU timeout accepts one duration suffix, not the compound 71h30m.
+MAX_RUNTIME="${SCREW_MAX_RUNTIME:-4290m}"
+EVAL_EPISODES="${SCREW_EVAL_EPISODES:-2000}"
+MEMORY_CEILING="${SCREW_HX1_MEMORY_CEILING:-0.90}"
+PREFLIGHT_STEPS="${SCREW_HX1_PREFLIGHT_STEPS:-4000}"
+
+screw_require_file "${SCREW_HPC_ROOT}/preflight.py"
+screw_require_file "${SCREW_HPC_ROOT}/training_stack_preflight.py"
+screw_require_file "${SCREW_HPC_ROOT}/pipeline.py"
+screw_require_file "${CONFIG}"
+
+export WARP_CACHE_PATH="${SCREW_HPC_ROOT}/.cache/warp_hx1_a100_w14000_residual"
+mkdir -p "${WARP_CACHE_PATH}" "${RUN_DIR}"
+
+if ! command -v flock >/dev/null 2>&1; then
+  printf '%s\n' "ERROR: flock is required to protect the formal run." >&2
+  exit 69
+fi
+LOCK_FILE="${SCREW_HPC_ROOT}/runs/.hx1_a100_w14000_diffusion_ik_residual.lock"
+exec 9>>"${LOCK_FILE}"
+if ! flock -n 9; then
+  printf '%s\n' \
+    "ERROR: another 14000-world residual job owns ${LOCK_FILE}." >&2
+  exit 75
+fi
+printf 'job=%s host=%s acquired_utc=%s\n' \
+  "${PBS_JOBID:-manual}" "$(hostname)" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >&9
+
+screw_start_live_monitor "${RUN_DIR}"
+screw_record_job \
+  "${RUN_DIR}" preflight "" \
+  "Running the isolated 14000-world A100 Diffusion-IK-actuator-residual training-stack gate."
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/preflight.py" \
+  --mode gpu \
+  --config "${CONFIG}" \
+  --worlds 14000
+
+"${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/training_stack_preflight.py" \
+  --config "${CONFIG}" \
+  --worlds 14000 \
+  --max-memory-fraction "${MEMORY_CEILING}" \
+  --physics-steps "${PREFLIGHT_STEPS}" \
+  --pipeline-mode diffusion-tqc
+
+screw_record_job \
+  "${RUN_DIR}" running "" \
+  "Formal 14000-world demonstrations, Diffusion, 16D actuator-residual TQC, and ${EVAL_EPISODES}-episode evaluation pipeline is running."
+
+set +e
+timeout --signal=INT --kill-after=300s "${MAX_RUNTIME}" \
+  "${SCREW_PYTHON}" "${SCREW_HPC_ROOT}/pipeline.py" \
+    --config "${CONFIG}" \
+    --stage full \
+    --resume auto \
+    --episodes "${EVAL_EPISODES}" \
+    --run-dir "${RUN_DIR}"
+STATUS=$?
+set -e
+
+case "${STATUS}" in
+  0)
+    screw_record_job \
+      "${RUN_DIR}" completed 0 \
+      "Formal 14000-world Diffusion-IK-actuator-residual pipeline completed."
+    printf 'Formal HX1 residual pipeline completed: %s\n' "${RUN_DIR}"
+    ;;
+  124|130)
+    screw_record_job \
+      "${RUN_DIR}" interrupted_resumable "${STATUS}" \
+      "Pipeline stopped at a consistent resumable cursor."
+    printf '%s\n' \
+      "Walltime guard stopped this allocation cleanly." \
+      "Resubmit this same PBS job to resume from ${RUN_DIR}."
+    ;;
+  *)
+    screw_record_job \
+      "${RUN_DIR}" failed "${STATUS}" \
+      "Formal 14000-world Diffusion-IK-actuator-residual pipeline failed."
+    printf 'Formal pipeline failed with status %s\n' "${STATUS}" >&2
+    exit "${STATUS}"
+    ;;
+esac

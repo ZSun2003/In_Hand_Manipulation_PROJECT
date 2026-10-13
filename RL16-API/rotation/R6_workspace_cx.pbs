@@ -1,0 +1,106 @@
+#!/bin/bash
+#PBS -N r6_rot_trans_workspace
+#PBS -l select=1:ncpus=64:mem=256gb
+#PBS -l walltime=47:50:00
+#PBS -j oe
+#PBS -r y
+#PBS -S /bin/bash
+
+# Submit from inside RL16-API/rotation:
+#   qsub R6_workspace_cx.pbs
+#
+# Re-submitting the same file resumes completed (axis-combination, z) tasks
+# from R6_rotation_translation_workspace_outputs/full_root0p600.
+
+set -euo pipefail
+
+if ! command -v module >/dev/null 2>&1 && [[ -r /etc/profile ]]; then
+  set +u
+  source /etc/profile
+  set -u
+fi
+if ! command -v module >/dev/null 2>&1; then
+  echo "ERROR: the CX module command is unavailable in this PBS shell." >&2
+  exit 2
+fi
+
+unset PYTHONHOME PYTHONPATH || true
+export PYTHONNOUSERSITE=1
+
+PROJECT_DIR="${R6_PROJECT_DIR:-${PBS_O_WORKDIR:?PBS_O_WORKDIR is not set}}"
+PYTHON_MODULE="${R6_PYTHON_MODULE:-}"
+if [[ -z "$PYTHON_MODULE" && -r "$PROJECT_DIR/.r6_cx_python_module" ]]; then
+  IFS= read -r PYTHON_MODULE < "$PROJECT_DIR/.r6_cx_python_module"
+fi
+PYTHON_MODULE="${PYTHON_MODULE:-Python/3.11.5-GCCcore-13.2.0}"
+
+module purge
+module load tools/prod
+module load "$PYTHON_MODULE"
+
+cd "$PROJECT_DIR"
+if [[ ! -f R6_rotation_translation_workspace.py || ! -f Project.xml ]]; then
+  echo "ERROR: submit this job from inside RL16-API/rotation." >&2
+  exit 2
+fi
+REPO_ROOT="$(cd -- "$PROJECT_DIR/../.." && pwd)"
+PYTHON="${RL_PYTHON:-$REPO_ROOT/RL_env/bin/python}"
+if [[ ! -x "$PYTHON" ]]; then
+  echo "Missing shared HPC interpreter. Run RL_env/build.sh --profile local." >&2
+  exit 2
+fi
+export IRP_PYTHON_ENV="$(cd -- "$(dirname -- "$PYTHON")/.." && pwd)"
+
+RUN_NAME="${R6_RUN_NAME:-full_root0p600}"
+OUTPUT_DIR="$PROJECT_DIR/R6_rotation_translation_workspace_outputs/$RUN_NAME"
+# This PBS file requests exactly 64 CPUs.  PBS Pro may expose NCPUS as the
+# default ompthreads value (often 1), so do not derive process count from it.
+WORKERS="${R6_WORKERS:-64}"
+
+mkdir -p "$OUTPUT_DIR"
+export PYTHONUNBUFFERED=1
+export PYTHONPYCACHEPREFIX="${TMPDIR:?TMPDIR is not set}/r6_pycache"
+mkdir -p "$PYTHONPYCACHEPREFIX"
+
+# Each process runs scalar analytic IK; prevent NumPy's libraries from creating
+# another thread pool inside every PBS worker.
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+
+echo "Started: $(date -Is)"
+echo "PBS job: ${PBS_JOBID:-unknown}"
+echo "Host: $(hostname)"
+echo "Project: $PROJECT_DIR"
+echo "Output: $OUTPUT_DIR"
+echo "Workers: $WORKERS"
+echo "PBS_NCPUS/NCPUS: ${PBS_NCPUS:-unset}/${NCPUS:-unset}"
+echo "nproc: $(nproc 2>/dev/null || echo unavailable)"
+echo "Python module: $PYTHON_MODULE"
+"$PYTHON" --version
+
+# Fast preflight before the long allocation starts doing workspace work.
+"$PYTHON" R6_rotation_translation_workspace.py \
+  --output-dir "$OUTPUT_DIR" \
+  --validate-only
+
+/usr/bin/time -v "$PYTHON" -u R6_rotation_translation_workspace.py \
+  --root-height 0.600 \
+  --z-min 0.285 \
+  --z-max 0.500 \
+  --z-step 0.001 \
+  --angle-min-deg 0 \
+  --angle-max-deg 90 \
+  --angle-step-deg 1 \
+  --r-search-max 0.180 \
+  --r-step 0.001 \
+  --theta-step-deg 9 \
+  --disk-diameter 0.050 \
+  --tip-squeeze-margin 0 \
+  --sign-mode all \
+  --workers "$WORKERS" \
+  --output-dir "$OUTPUT_DIR"
+
+echo "Finished: $(date -Is)"
+find "$OUTPUT_DIR" -maxdepth 1 -type f -print | sort

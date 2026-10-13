@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="gripper3_mjwarp_rl_cone">
+    <!-- One-object MJWarp shard: nq=27, nv=26, nu=12. -->
+    <compiler angle="radian" meshdir="mesh" balanceinertia="true"
+              discardvisual="false" autolimits="true"/>
+    <option timestep="0.0005" solver="Newton" jacobian="dense"
+            iterations="150" ls_iterations="20" tolerance="1e-10">
+        <flag warmstart="enable" multiccd="disable"/>
+    </option>
+
+    <include file="G3_Share.xml"/>
+    <include file="G3_ObjectAssets.xml"/>
+
+    <worldbody>
+        <geom name="floor" pos="0 0 -0.1" size="15 15 1"
+              type="plane" material="matplane" margin="0.001"
+              condim="3" friction="1 0.005 0.0001"
+              contype="0" conaffinity="0"/>
+        <include file="G3_Gripper.xml"/>
+        <body name="table" pos="0 0 0.25">
+            <geom name="table_geom" type="box" class="platform"
+                  size="0.5 0.5 0.01" rgba="0.70 0.70 0.70 1"
+                  friction="1 0.005 0.0001"/>
+        </body>
+        <body name="object_cone" pos="2.00 0 0.260">
+            <joint name="joint:object_cone" type="free" damping="0.012"/>
+            <inertial pos="0 0 0.030" mass="0.200"
+                      diaginertia="0.000156 0.000156 0.000096"/>
+            <geom name="object_cone_visual" class="visual"
+                  type="mesh" mesh="object_cone_mesh"
+                  rgba="0.93 0.43 0.16 1"/>
+            <geom name="object_cone_collision_0" class="grasp_object"
+                  type="mesh" mesh="object_cone_mesh" rgba="0 0 0 0"/>
+            <site name="object_cone_reference" pos="0 0 0.030" size="0.002"
+                  rgba="1 1 1 0"/>
+        </body>
+        <light directional="true" diffuse="0.3 0.3 0.3"
+               specular="0.3 0.3 0.3" castshadow="true"
+               pos="0.1 0.1 0.1" dir="0.2 0.1 -0.1"/>
+    </worldbody>
+</mujoco>

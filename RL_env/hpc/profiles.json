@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "python": "3.11-3.12",
+  "platform": "Linux x86_64",
+  "torch_index_url": "https://download.pytorch.org/whl/cu128",
+  "profiles": {
+    "core": {
+      "torch": "2.7.1",
+      "torch_cuda": "12.8",
+      "setuptools": "83.0.0",
+      "requirements": "requirements/core.txt",
+      "projects": [
+        "diffusion",
+        "grab-g3",
+        "grab-g6"
+      ]
+    }
+  }
+}
