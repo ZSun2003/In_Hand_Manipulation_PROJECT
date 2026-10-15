@@ -44,6 +44,28 @@ bash RL_env/run.sh local RL16-AP/translation/T5_workspace.py \
 
 `--no-render` 用于终端和服务器；macOS 的 MuJoCo 交互窗口由共享环境中的 `mjpython` 启动。控制目标采用 `z r theta`，长度单位为米、角度默认为度。
 
+## 仿真演示
+
+<p align="center">
+  <img src="figures/ch6_01_initial_states.png" width="100%">
+  <br>
+  <em>Matched initial positions of the Benchmark and RL16-API grippers with all four regular objects in MuJoCo.</em>
+</p>
+
+<p align="center">
+  <img src="figures/ch6_02_translation_endpoints.png" width="100%">
+  <br>
+  <img src="figures/ch6_03_rotation_endpoints.png" width="100%">
+  <br>
+  <em>MuJoCo task endpoints for the Benchmark and RL16-API grippers with all four regular objects. Top: pure-translation S-path endpoints. Bottom: local-XYZ (+15, −21, +30)° rotation endpoints. <a href="https://youtube.com/shorts/BwXKaWDFlWQ">Supplementary video demonstration</a> (from 0:00 to 1:25).</em>
+</p>
+
+<p align="center">
+  <img src="figures/fig07_tqc_keyframes.png" width="100%">
+  <br>
+  <em>Motion demonstration of the Diffusion–IK–residual controller: (a) close, tick 107; (b) lift, tick 163; (c) aligned approach, tick 561; (d) insert, tick 897; (e) engage, tick 997; and (f) final hold, tick 3155. The camera plane is parallel to the socket side and inclined by 30° to the table. <a href="https://youtube.com/shorts/BwXKaWDFlWQ">Supplementary video demonstration</a> (from 1:25 to 2:08).</em>
+</p>
+
 ## 说明
 
 - 本仓库只包含源代码、训练配置、仿真 XML 与 STL/CAD 资产；不包含训练权重、示范数据、运行日志与论文文档。
