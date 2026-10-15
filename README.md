@@ -2,7 +2,10 @@
 
 四指机械手手内操作（In-Hand Manipulation）研究项目的源代码归档。项目基于 MuJoCo 仿真，涵盖四种机械手结构的解析运动学 / 逆运动学（IK）、数值工作空间分析，以及 Diffusion Policy + TQC 残差强化学习的训练与评估代码，覆盖物体的平移、旋转与螺旋装配等操作任务。
 
-**▶ 演示视频**：[Grippers' Manipulation Demonstrations (YouTube)](https://youtube.com/shorts/BwXKaWDFlWQ) — IK-residual 操作演示（0:00–1:25）；Diffusion–IK–residual 螺旋装配演示（1:25–2:08）。
+**▶ 演示视频**：[Grippers' Manipulation Demonstrations (YouTube)](https://youtube.com/shorts/BwXKaWDFlWQ)
+
+- **0:00–1:25**：IK-residual 控制器 —— Benchmark 与 RL16-API 机械手抓取并抬起四种规则物体（立方体、圆柱、三棱柱、圆锥），完成纯平移 S 形轨迹跟踪与局部 XYZ (+15, −21, +30)° 旋转操作
+- **1:25–2:08**：Diffusion–IK–residual 控制器 —— 螺旋装配任务完整过程：闭合、抬起、对准接近、插入、旋入啮合、最终保持
 
 ## 仓库结构
 
