@@ -57,13 +57,13 @@ bash RL_env/run.sh local RL16-AP/translation/T5_workspace.py \
   <br>
   <img src="figures/ch6_03_rotation_endpoints.png" width="100%">
   <br>
-  <em>MuJoCo task endpoints for the Benchmark and RL16-API grippers with all four regular objects. Top: pure-translation S-path endpoints. Bottom: local-XYZ (+15, −21, +30)° rotation endpoints. <a href="https://youtube.com/shorts/BwXKaWDFlWQ">Supplementary video demonstration</a> (from 0:00 to 1:25).</em>
+  <em>MuJoCo task endpoints for the Benchmark and RL16-API grippers with all four regular objects. Top: pure-translation S-path endpoints. Bottom: local-XYZ (+15, −21, +30)° rotation endpoints.</em>
 </p>
 
 <p align="center">
   <img src="figures/fig07_tqc_keyframes.png" width="100%">
   <br>
-  <em>Motion demonstration of the Diffusion–IK–residual controller: (a) close, tick 107; (b) lift, tick 163; (c) aligned approach, tick 561; (d) insert, tick 897; (e) engage, tick 997; and (f) final hold, tick 3155. The camera plane is parallel to the socket side and inclined by 30° to the table. <a href="https://youtube.com/shorts/BwXKaWDFlWQ">Supplementary video demonstration</a> (from 1:25 to 2:08).</em>
+  <em>Motion demonstration of the Diffusion–IK–residual controller: (a) close, tick 107; (b) lift, tick 163; (c) aligned approach, tick 561; (d) insert, tick 897; (e) engage, tick 997; and (f) final hold, tick 3155. The camera plane is parallel to the socket side and inclined by 30° to the table.</em>
 </p>
 
 ## 说明
